@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Job Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto text-center">
+        <h1 class="display-4 mb-4">Welcome to Job Portal</h1>
+        <p class="lead mb-5">
+            Connect job seekers with employers. Find your dream job or hire the perfect candidate.
+        </p>
+
+        {% if not user.is_authenticated %}
+            <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+<a href="{% url 'users:register_job_seeker' %}" class="btn btn-primary btn-lg px-4 gap-3">Register as Job Seeker</a>
+<a href="{% url 'users:register_employer' %}" class="btn btn-outline-primary btn-lg px-4">Register as Employer</a>           
+ </div>
+<p class="mt-4">
+    Already have an account? <a href="{% url 'users:login' %}">Login here</a>
+</p>
+        {% else %}
+            <div class="alert alert-success">
+                <h4>Welcome back, {{ user.username }}!</h4>
+                <p>You're logged in as a <strong>{{ user.get_user_type_display }}</strong></p>
+                <a href="#" class="btn btn-primary mt-2">Go to Dashboard</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h3 class="card-title">📝 For Job Seekers</h3>
+                <p class="card-text">Create your profile, upload your resume, and apply to jobs with one click.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h3 class="card-title">💼 For Employers</h3>
+                <p class="card-text">Post job listings, review applications, and find the perfect candidates.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h3 class="card-title">🚀 Easy to Use</h3>
+                <p class="card-text">Simple, intuitive interface designed for both job seekers and employers.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
