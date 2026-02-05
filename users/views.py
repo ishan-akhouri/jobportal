@@ -1,3 +1,4 @@
+#/users/views.py
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login
@@ -50,6 +51,7 @@ def register_employer(request):
 
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.decorators import login_required
 
 def login_view(request):
     """
@@ -83,3 +85,92 @@ def logout_view(request):
     logout(request)
     messages.info(request, 'You have been logged out.')
     return redirect('home')
+
+
+@login_required
+def profile_view(request):
+    """
+    Display user profile (read-only).
+    Shows different information based on user type.
+    """
+    user = request.user
+    
+    if user.user_type == 'job_seeker':
+        try:
+            profile = user.jobseekerprofile
+        except:
+            # Create profile if it doesn't exist
+            from .models import JobSeekerProfile
+            profile = JobSeekerProfile.objects.create(user=user)
+        
+        return render(request, 'users/profile.html', {
+            'profile': profile,
+            'user_type': 'job_seeker'
+        })
+    else:  # employer
+        try:
+            profile = user.employerprofile
+        except:
+            # Create profile if it doesn't exist
+            from .models import EmployerProfile
+            profile = EmployerProfile.objects.create(user=user, company_name='Not Set')
+        
+        return render(request, 'users/profile.html', {
+            'profile': profile,
+            'user_type': 'employer'
+        })
+
+
+@login_required
+def profile_edit_view(request):
+    """
+    Edit user profile.
+    Uses different forms based on user type.
+    """
+    user = request.user
+    
+    if user.user_type == 'job_seeker':
+        try:
+            profile = user.jobseekerprofile
+        except:
+            from .models import JobSeekerProfile
+            profile = JobSeekerProfile.objects.create(user=user)
+        
+        if request.method == 'POST':
+            from .forms import JobSeekerProfileEditForm
+            form = JobSeekerProfileEditForm(request.POST, request.FILES, instance=profile, user=user)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Your profile has been updated successfully!')
+                return redirect('users:profile')
+        else:
+            from .forms import JobSeekerProfileEditForm
+            form = JobSeekerProfileEditForm(instance=profile, user=user)
+        
+        return render(request, 'users/profile_edit.html', {
+            'form': form,
+            'user_type': 'job_seeker'
+        })
+    
+    else:  # employer
+        try:
+            profile = user.employerprofile
+        except:
+            from .models import EmployerProfile
+            profile = EmployerProfile.objects.create(user=user, company_name='Not Set')
+        
+        if request.method == 'POST':
+            from .forms import EmployerProfileEditForm
+            form = EmployerProfileEditForm(request.POST, instance=profile, user=user)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Your profile has been updated successfully!')
+                return redirect('users:profile')
+        else:
+            from .forms import EmployerProfileEditForm
+            form = EmployerProfileEditForm(instance=profile, user=user)
+        
+        return render(request, 'users/profile_edit.html', {
+            'form': form,
+            'user_type': 'employer'
+        })

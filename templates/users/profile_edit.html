@@ -1,0 +1,140 @@
+<!--/templates/users/profile_edit.html-->
+
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile - Job Portal{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-body p-5">
+                <h2 class="text-center mb-4">Edit Your Profile</h2>
+                
+                <form method="post" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+                    
+                    <h5 class="mb-3">Personal Information</h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.first_name.id_for_label }}" class="form-label">First Name</label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                                <div class="text-danger small">{{ form.first_name.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.last_name.id_for_label }}" class="form-label">Last Name</label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                                <div class="text-danger small">{{ form.last_name.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="text-danger small">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.phone.id_for_label }}" class="form-label">Phone</label>
+                        {{ form.phone }}
+                        {% if form.phone.errors %}
+                            <div class="text-danger small">{{ form.phone.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    {% if user_type == 'job_seeker' %}
+                        <h5 class="mb-3">Professional Information</h5>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.resume.id_for_label }}" class="form-label">Resume</label>
+                            {% if form.instance.resume %}
+                                <div class="mb-2">
+                                    <small class="text-muted">
+                                        Current: <a href="{{ form.instance.resume.url }}" target="_blank">View Resume</a>
+                                    </small>
+                                </div>
+                            {% endif %}
+                            {{ form.resume }}
+                            {% if form.resume.errors %}
+                                <div class="text-danger small">{{ form.resume.errors }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Upload a new file to replace the current resume</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.skills.id_for_label }}" class="form-label">Skills</label>
+                            {{ form.skills }}
+                            {% if form.skills.errors %}
+                                <div class="text-danger small">{{ form.skills.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.experience_years.id_for_label }}" class="form-label">Years of Experience</label>
+                            {{ form.experience_years }}
+                            {% if form.experience_years.errors %}
+                                <div class="text-danger small">{{ form.experience_years.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.education.id_for_label }}" class="form-label">Education</label>
+                            {{ form.education }}
+                            {% if form.education.errors %}
+                                <div class="text-danger small">{{ form.education.errors }}</div>
+                            {% endif %}
+                        </div>
+                    
+                    {% else %}
+                        <h5 class="mb-3">Company Information</h5>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.company_name.id_for_label }}" class="form-label">Company Name</label>
+                            {{ form.company_name }}
+                            {% if form.company_name.errors %}
+                                <div class="text-danger small">{{ form.company_name.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.company_description.id_for_label }}" class="form-label">Company Description</label>
+                            {{ form.company_description }}
+                            {% if form.company_description.errors %}
+                                <div class="text-danger small">{{ form.company_description.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.website.id_for_label }}" class="form-label">Website</label>
+                            {{ form.website }}
+                            {% if form.website.errors %}
+                                <div class="text-danger small">{{ form.website.errors }}</div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">Save Changes</button>
+                        <a href="{% url 'users:profile' %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

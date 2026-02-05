@@ -1,0 +1,151 @@
+<!--/templates/users/profile.html-->
+
+{% extends 'base.html' %}
+
+{% block title %}My Profile - Job Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>My Profile</h2>
+            <a href="{% url 'users:profile_edit' %}" class="btn btn-primary">
+                Edit Profile
+            </a>
+        </div>
+
+        {% if user_type == 'job_seeker' %}
+            <!-- Job Seeker Profile -->
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Personal Information</h5>
+                    <div class="row mb-2">
+                        <div class="col-md-4 text-muted">Name:</div>
+                        <div class="col-md-8">{{ user.first_name }} {{ user.last_name }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 text-muted">Username:</div>
+                        <div class="col-md-8">{{ user.username }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 text-muted">Email:</div>
+                        <div class="col-md-8">{{ user.email }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 text-muted">Phone:</div>
+                        <div class="col-md-8">{{ user.phone|default:"Not provided" }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 text-muted">Member Since:</div>
+                        <div class="col-md-8">{{ user.created_at|date:"F d, Y" }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Professional Information</h5>
+                    <div class="row mb-2">
+                        <div class="col-md-4 text-muted">Resume:</div>
+                        <div class="col-md-8">
+                            {% if profile.resume %}
+                                <a href="{{ profile.resume.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    View Resume
+                                </a>
+                            {% else %}
+                                <span class="text-muted">No resume uploaded</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 text-muted">Skills:</div>
+                        <div class="col-md-8">
+                            {% if profile.skills %}
+                                {{ profile.skills }}
+                            {% else %}
+                                <span class="text-muted">No skills listed</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 text-muted">Experience:</div>
+                        <div class="col-md-8">{{ profile.experience_years }} years</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 text-muted">Education:</div>
+                        <div class="col-md-8">
+                            {% if profile.education %}
+                                {{ profile.education }}
+                            {% else %}
+                                <span class="text-muted">Not provided</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% else %}
+            <!-- Employer Profile -->
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Personal Information</h5>
+                    <div class="row mb-2">
+                        <div class="col-md-4 text-muted">Name:</div>
+                        <div class="col-md-8">{{ user.first_name }} {{ user.last_name }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 text-muted">Username:</div>
+                        <div class="col-md-8">{{ user.username }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 text-muted">Email:</div>
+                        <div class="col-md-8">{{ user.email }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 text-muted">Phone:</div>
+                        <div class="col-md-8">{{ user.phone|default:"Not provided" }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 text-muted">Member Since:</div>
+                        <div class="col-md-8">{{ user.created_at|date:"F d, Y" }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Company Information</h5>
+                    <div class="row mb-2">
+                        <div class="col-md-4 text-muted">Company Name:</div>
+                        <div class="col-md-8"><strong>{{ profile.company_name }}</strong></div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 text-muted">Description:</div>
+                        <div class="col-md-8">
+                            {% if profile.company_description %}
+                                {{ profile.company_description }}
+                            {% else %}
+                                <span class="text-muted">No description provided</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 text-muted">Website:</div>
+                        <div class="col-md-8">
+                            {% if profile.website %}
+                                <a href="{{ profile.website }}" target="_blank">{{ profile.website }}</a>
+                            {% else %}
+                                <span class="text-muted">No website provided</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="text-center mt-4">
+            <a href="{% url 'home' %}" class="btn btn-outline-secondary">Back to Home</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
