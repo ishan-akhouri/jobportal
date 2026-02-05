@@ -24,7 +24,7 @@
             <div class="alert alert-success">
                 <h4>Welcome back, {{ user.username }}!</h4>
                 <p>You're logged in as a <strong>{{ user.get_user_type_display }}</strong></p>
-                <a href="#" class="btn btn-primary mt-2">Go to Dashboard</a>
+                <a href="{% url 'users:dashboard' %}" class="btn btn-primary mt-2">Go to Dashboard</a>
             </div>
         {% endif %}
     </div>
@@ -34,7 +34,7 @@
     <div class="col-md-4 mb-4">
         <div class="card h-100">
             <div class="card-body text-center">
-                <h3 class="card-title">📝 For Job Seekers</h3>
+                <h3 class="card-title">📋 For Job Seekers</h3>
                 <p class="card-text">Create your profile, upload your resume, and apply to jobs with one click.</p>
             </div>
         </div>

@@ -59,7 +59,7 @@ def login_view(request):
     After login, redirects to appropriate dashboard.
     """
     if request.user.is_authenticated:
-        return redirect('home')
+        return redirect('users:dashboard')
     
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -70,8 +70,7 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 messages.success(request, f'Welcome back, {username}!')
-                # Redirect based on user type
-                return redirect('home')  # For now, just go home. Later we'll add dashboards.
+                return redirect('users:dashboard')
     else:
         form = AuthenticationForm()
     
@@ -174,3 +173,74 @@ def profile_edit_view(request):
             'form': form,
             'user_type': 'employer'
         })
+
+
+@login_required
+def dashboard_view(request):
+    """
+    Dashboard view - routes to appropriate dashboard based on user type.
+    Job seekers and employers see different dashboards.
+    """
+    user = request.user
+    
+    if user.user_type == 'job_seeker':
+        # Get job seeker profile
+        try:
+            profile = user.jobseekerprofile
+        except:
+            from .models import JobSeekerProfile
+            profile = JobSeekerProfile.objects.create(user=user)
+        
+        # Calculate profile completion percentage
+        profile_fields = [
+            user.first_name,
+            user.last_name,
+            user.email,
+            user.phone,
+            profile.resume,
+            profile.skills,
+            profile.education,
+        ]
+        completed_fields = sum(1 for field in profile_fields if field)
+        profile_completion = int((completed_fields / len(profile_fields)) * 100)
+        
+        # Get applications count (will be 0 for now, we'll implement in Phase 3)
+        from jobs.models import Application
+        applications_count = Application.objects.filter(applicant=user).count()
+        
+        context = {
+            'profile': profile,
+            'applications_count': applications_count,
+            'profile_completion': profile_completion,
+        }
+        
+        return render(request, 'users/dashboard_job_seeker.html', context)
+    
+    else:  # employer
+        # Get employer profile
+        try:
+            profile = user.employerprofile
+        except:
+            from .models import EmployerProfile
+            profile = EmployerProfile.objects.create(user=user, company_name='Not Set')
+        
+        # Get posted jobs count
+        from jobs.models import Job, Application
+        jobs_posted = Job.objects.filter(employer=user).count()
+        
+        # Get applications received count
+        applications_received = Application.objects.filter(
+            job__employer=user
+        ).count()
+        
+        # Get recent jobs posted by this employer
+        recent_jobs = Job.objects.filter(employer=user).order_by('-created_at')[:5]
+        
+        context = {
+            'profile': profile,
+            'jobs_posted': jobs_posted,
+            'applications_received': applications_received,
+            'recent_jobs': recent_jobs,
+        }
+        
+        return render(request, 'users/dashboard_employer.html', context)

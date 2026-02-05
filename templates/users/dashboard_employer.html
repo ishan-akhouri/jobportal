@@ -1,0 +1,123 @@
+<!--/templates/users/dashboard_employer.html-->
+
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Job Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-10 mx-auto">
+        <!-- Welcome Section -->
+        <div class="mb-4">
+            <h2>Welcome back, {{ user.first_name }}! 👋</h2>
+            <p class="text-muted">Managing <strong>{{ profile.company_name }}</strong></p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <h1 class="display-4 text-primary mb-2">{{ jobs_posted }}</h1>
+                        <p class="text-muted mb-0">Jobs Posted</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <h1 class="display-4 text-success mb-2">{{ applications_received }}</h1>
+                        <p class="text-muted mb-0">Applications Received</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Quick Actions</h5>
+                <div class="d-grid gap-2 d-md-flex">
+                    <a href="#" class="btn btn-primary">
+                        ➕ Post a New Job
+                    </a>
+                    <a href="#" class="btn btn-outline-primary">
+                        📋 View All Applications
+                    </a>
+                    <a href="{% url 'users:profile_edit' %}" class="btn btn-outline-secondary">
+                        ✏️ Edit Company Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Posted Jobs Section -->
+        <div class="card shadow">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0">Your Job Postings</h5>
+                    <a href="#" class="btn btn-sm btn-primary">Post New Job</a>
+                </div>
+
+                {% if recent_jobs %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Job Title</th>
+                                    <th>Location</th>
+                                    <th>Type</th>
+                                    <th>Posted Date</th>
+                                    <th>Applications</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for job in recent_jobs %}
+                                <tr>
+                                    <td><strong>{{ job.title }}</strong></td>
+                                    <td>{{ job.location }}</td>
+                                    <td>
+                                        <span class="badge bg-info">{{ job.get_job_type_display }}</span>
+                                    </td>
+                                    <td>{{ job.created_at|date:"M d, Y" }}</td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ job.application_set.count }}</span>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="btn btn-sm btn-outline-primary">View</a>
+                                        <a href="#" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted py-5">
+                        <p class="lead">You haven't posted any jobs yet</p>
+                        <p>Start attracting top talent by posting your first job opening!</p>
+                        <a href="#" class="btn btn-primary mt-2">Post Your First Job</a>
+                        <br>
+                        <small class="text-muted mt-3 d-block">(Job posting feature coming in Phase 3)</small>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recent Applications Section -->
+        {% if applications_received > 0 %}
+        <div class="card shadow mt-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Recent Applications</h5>
+                <div class="text-center text-muted py-5">
+                    <p class="lead">You have {{ applications_received }} application{{ applications_received|pluralize }}</p>
+                    <p>Application management coming soon!</p>
+                    <a href="#" class="btn btn-outline-primary mt-2">View All Applications</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

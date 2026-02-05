@@ -1,0 +1,108 @@
+<!--/templates/users/dashboard_job_seeker.html-->
+
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Job Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-10 mx-auto">
+        <!-- Welcome Section -->
+        <div class="mb-4">
+            <h2>Welcome back, {{ user.first_name }}! 👋</h2>
+            <p class="text-muted">Here's an overview of your job search activity</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <h1 class="display-4 text-primary mb-2">{{ applications_count }}</h1>
+                        <p class="text-muted mb-0">Applications Submitted</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <h1 class="display-4 text-success mb-2">{{ profile_completion }}%</h1>
+                        <p class="text-muted mb-0">Profile Completion</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <h1 class="display-4 text-info mb-2">{{ profile.experience_years }}</h1>
+                        <p class="text-muted mb-0">Years of Experience</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Quick Actions</h5>
+                <div class="d-grid gap-2 d-md-flex">
+                    <a href="#" class="btn btn-primary">
+                        🔍 Browse Jobs
+                    </a>
+                    <a href="{% url 'users:profile_edit' %}" class="btn btn-outline-primary">
+                        ✏️ Edit Profile
+                    </a>
+                    {% if profile_completion < 100 %}
+                        <a href="{% url 'users:profile_edit' %}" class="btn btn-outline-warning">
+                            ⚠️ Complete Your Profile
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Completion Alert -->
+        {% if profile_completion < 100 %}
+        <div class="alert alert-warning" role="alert">
+            <h5 class="alert-heading">📝 Complete Your Profile!</h5>
+            <p class="mb-0">Your profile is {{ profile_completion }}% complete. A complete profile helps employers find you and increases your chances of getting hired!</p>
+            <hr>
+            <p class="mb-0">
+                <a href="{% url 'users:profile_edit' %}" class="alert-link">Complete your profile now</a>
+            </p>
+        </div>
+        {% endif %}
+
+        <!-- Recent Jobs Section (Placeholder) -->
+        <div class="card shadow">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Recent Job Postings</h5>
+                <div class="text-center text-muted py-5">
+                    <p class="lead">No jobs available yet</p>
+                    <p>Check back soon for new opportunities!</p>
+                    <small class="text-muted">(Job browsing feature coming in Phase 3)</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Applications Section (Placeholder) -->
+        <div class="card shadow mt-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">My Applications</h5>
+                {% if applications_count > 0 %}
+                    <div class="text-center text-muted py-5">
+                        <p class="lead">You have {{ applications_count }} application{{ applications_count|pluralize }}</p>
+                        <p>Application tracking coming soon!</p>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted py-5">
+                        <p class="lead">You haven't applied to any jobs yet</p>
+                        <p>Start browsing jobs and submit your applications!</p>
+                        <a href="#" class="btn btn-primary mt-2">Browse Jobs</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
