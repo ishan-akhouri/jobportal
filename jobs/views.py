@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from .models import Job, Application
-from .forms import JobSearchForm
+from .forms import JobSearchForm, JobApplicationForm
 
 
 def job_list_view(request):
@@ -72,3 +72,67 @@ def job_detail_view(request, pk):
     }
     
     return render(request, 'jobs/job_detail.html', context)
+
+
+@login_required
+def apply_to_job(request, pk):
+    """
+    Job application view - job seekers apply to a job with cover letter.
+    Only accessible to job seekers.
+    """
+    # Check if user is a job seeker
+    if request.user.user_type != 'job_seeker':
+        messages.error(request, 'Only job seekers can apply to jobs.')
+        return redirect('jobs:job_detail', pk=pk)
+    
+    # Get the job
+    job = get_object_or_404(Job, pk=pk, is_active=True)
+    
+    # Check if already applied
+    existing_application = Application.objects.filter(
+        job=job,
+        applicant=request.user
+    ).first()
+    
+    if existing_application:
+        messages.warning(request, 'You have already applied to this job.')
+        return redirect('jobs:job_detail', pk=pk)
+    
+    if request.method == 'POST':
+        form = JobApplicationForm(request.POST, job=job, applicant=request.user)
+        if form.is_valid():
+            application = form.save()
+            messages.success(request, f'Your application to {job.title} has been submitted successfully!')
+            return redirect('jobs:my_applications')
+    else:
+        form = JobApplicationForm(job=job, applicant=request.user)
+    
+    context = {
+        'form': form,
+        'job': job,
+    }
+    
+    return render(request, 'jobs/apply.html', context)
+
+
+@login_required
+def my_applications_view(request):
+    """
+    Display all applications submitted by the logged-in job seeker.
+    Only accessible to job seekers.
+    """
+    # Check if user is a job seeker
+    if request.user.user_type != 'job_seeker':
+        messages.error(request, 'Only job seekers can view applications.')
+        return redirect('users:dashboard')
+    
+    # Get all applications by this user
+    applications = Application.objects.filter(
+        applicant=request.user
+    ).select_related('job', 'job__employer').order_by('-applied_at')
+    
+    context = {
+        'applications': applications,
+    }
+    
+    return render(request, 'jobs/my_applications.html', context)

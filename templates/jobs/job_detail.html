@@ -94,11 +94,11 @@
                                 <strong>✓ Applied</strong>
                                 <p class="mb-0 small">You have already applied to this job.</p>
                             </div>
-                            <a href="{% url 'jobs:job_list' %}" class="btn btn-outline-primary w-100">
-                                Browse More Jobs
+                            <a href="{% url 'jobs:my_applications' %}" class="btn btn-outline-primary w-100">
+                                View My Applications
                             </a>
                         {% else %}
-                            <a href="#" class="btn btn-primary w-100 btn-lg">
+                            <a href="{% url 'jobs:apply' job.pk %}" class="btn btn-primary w-100 btn-lg">
                                 Apply Now
                             </a>
                             <p class="text-muted small mt-2 text-center">

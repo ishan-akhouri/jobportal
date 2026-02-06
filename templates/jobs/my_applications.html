@@ -1,0 +1,92 @@
+<!-- templates/jobs/my_applications.html -->
+{% extends 'base.html' %}
+
+{% block title %}My Applications - Job Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">My Applications</h1>
+
+        {% if applications %}
+            <p class="text-muted mb-4">
+                You have submitted <strong>{{ applications.count }}</strong> application{{ applications.count|pluralize }}
+            </p>
+
+            <div class="row">
+                {% for application in applications %}
+                    <div class="col-12 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <h5 class="card-title">
+                                            <a href="{% url 'jobs:job_detail' application.job.pk %}" class="text-decoration-none">
+                                                {{ application.job.title }}
+                                            </a>
+                                        </h5>
+                                        <p class="card-text text-muted mb-2">
+                                            <strong>{{ application.job.employer.employerprofile.company_name }}</strong>
+                                        </p>
+                                        <p class="card-text">
+                                            <span class="badge bg-info text-dark me-2">{{ application.job.get_job_type_display }}</span>
+                                            <span class="badge bg-secondary">{{ application.job.location }}</span>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <!-- Application Status -->
+                                        <div class="mb-2">
+                                            {% if application.status == 'pending' %}
+                                                <span class="badge bg-warning text-dark">Pending Review</span>
+                                            {% elif application.status == 'reviewed' %}
+                                                <span class="badge bg-info">Reviewed</span>
+                                            {% elif application.status == 'interview' %}
+                                                <span class="badge bg-primary">Interview</span>
+                                            {% elif application.status == 'accepted' %}
+                                                <span class="badge bg-success">Accepted</span>
+                                            {% elif application.status == 'rejected' %}
+                                                <span class="badge bg-danger">Rejected</span>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <p class="text-muted small mb-2">
+                                            Applied {{ application.applied_at|timesince }} ago
+                                        </p>
+                                        <p class="text-muted small mb-3">
+                                            {{ application.applied_at|date:"F d, Y" }}
+                                        </p>
+
+                                        <a href="{% url 'jobs:job_detail' application.job.pk %}" class="btn btn-sm btn-outline-primary">
+                                            View Job
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <!-- Cover Letter Preview (if exists) -->
+                                {% if application.cover_letter %}
+                                    <hr>
+                                    <div class="mt-3">
+                                        <strong class="text-muted small">Your Cover Letter:</strong>
+                                        <p class="card-text small text-truncate" style="max-width: 800px;">
+                                            {{ application.cover_letter|truncatewords:50 }}
+                                        </p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- No Applications -->
+            <div class="alert alert-info">
+                <h4>No Applications Yet</h4>
+                <p>You haven't applied to any jobs yet. Browse available positions and start applying!</p>
+                <a href="{% url 'jobs:job_list' %}" class="btn btn-primary mt-2">
+                    Browse Jobs
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
