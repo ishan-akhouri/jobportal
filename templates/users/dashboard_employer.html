@@ -38,11 +38,11 @@
             <div class="card-body">
                 <h5 class="card-title mb-3">Quick Actions</h5>
                 <div class="d-grid gap-2 d-md-flex">
-                    <a href="#" class="btn btn-primary">
+                    <a href="{% url 'jobs:post_job' %}" class="btn btn-primary">
                         ➕ Post a New Job
                     </a>
-                    <a href="#" class="btn btn-outline-primary">
-                        📋 View All Applications
+                    <a href="{% url 'jobs:my_jobs' %}" class="btn btn-outline-primary">
+                        📋 View My Jobs
                     </a>
                     <a href="{% url 'users:profile_edit' %}" class="btn btn-outline-secondary">
                         ✏️ Edit Company Profile
@@ -56,7 +56,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="card-title mb-0">Your Job Postings</h5>
-                    <a href="#" class="btn btn-sm btn-primary">Post New Job</a>
+                    <a href="{% url 'jobs:post_job' %}" class="btn btn-sm btn-primary">Post New Job</a>
                 </div>
 
                 {% if recent_jobs %}
@@ -85,21 +85,21 @@
                                         <span class="badge bg-primary">{{ job.application_set.count }}</span>
                                     </td>
                                     <td>
-                                        <a href="#" class="btn btn-sm btn-outline-primary">View</a>
-                                        <a href="#" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                        <a href="{% url 'jobs:job_detail' job.pk %}" class="btn btn-sm btn-outline-primary">View</a>
                                     </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
+                    <div class="text-center mt-3">
+                        <a href="{% url 'jobs:my_jobs' %}" class="btn btn-outline-primary">View All Jobs</a>
+                    </div>
                 {% else %}
                     <div class="text-center text-muted py-5">
                         <p class="lead">You haven't posted any jobs yet</p>
                         <p>Start attracting top talent by posting your first job opening!</p>
-                        <a href="#" class="btn btn-primary mt-2">Post Your First Job</a>
-                        <br>
-                        <small class="text-muted mt-3 d-block">(Job posting feature coming in Phase 3)</small>
+                        <a href="{% url 'jobs:post_job' %}" class="btn btn-primary mt-2">Post Your First Job</a>
                     </div>
                 {% endif %}
             </div>
@@ -112,8 +112,7 @@
                 <h5 class="card-title mb-3">Recent Applications</h5>
                 <div class="text-center text-muted py-5">
                     <p class="lead">You have {{ applications_received }} application{{ applications_received|pluralize }}</p>
-                    <p>Application management coming soon!</p>
-                    <a href="#" class="btn btn-outline-primary mt-2">View All Applications</a>
+                    <a href="{% url 'jobs:my_jobs' %}" class="btn btn-outline-primary mt-2">View My Jobs</a>
                 </div>
             </div>
         </div>

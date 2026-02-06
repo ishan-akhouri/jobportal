@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from .models import Job, Application
-from .forms import JobSearchForm, JobApplicationForm
+from .forms import JobSearchForm, JobApplicationForm, JobPostForm
 
 
 def job_list_view(request):
@@ -136,3 +136,55 @@ def my_applications_view(request):
     }
     
     return render(request, 'jobs/my_applications.html', context)
+
+
+@login_required
+def post_job_view(request):
+    """
+    Job posting view - employers create new job listings.
+    Only accessible to employers.
+    """
+    # Check if user is an employer
+    if request.user.user_type != 'employer':
+        messages.error(request, 'Only employers can post jobs.')
+        return redirect('users:dashboard')
+    
+    if request.method == 'POST':
+        form = JobPostForm(request.POST, employer=request.user)
+        if form.is_valid():
+            job = form.save()
+            messages.success(request, f'Job "{job.title}" has been posted successfully!')
+            return redirect('jobs:my_jobs')
+    else:
+        form = JobPostForm(employer=request.user)
+    
+    context = {
+        'form': form,
+    }
+    
+    return render(request, 'jobs/post_job.html', context)
+
+
+@login_required
+def my_jobs_view(request):
+    """
+    Display all jobs posted by the logged-in employer.
+    Only accessible to employers.
+    """
+    # Check if user is an employer
+    if request.user.user_type != 'employer':
+        messages.error(request, 'Only employers can view posted jobs.')
+        return redirect('users:dashboard')
+    
+    # Get all jobs posted by this employer
+    jobs = Job.objects.filter(employer=request.user).order_by('-created_at')
+    
+    # Get application counts for each job
+    for job in jobs:
+        job.application_count = Application.objects.filter(job=job).count()
+    
+    context = {
+        'jobs': jobs,
+    }
+    
+    return render(request, 'jobs/my_jobs.html', context)

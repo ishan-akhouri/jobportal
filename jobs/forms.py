@@ -67,3 +67,80 @@ class JobApplicationForm(forms.ModelForm):
             application.save()
         
         return application
+
+
+class JobPostForm(forms.ModelForm):
+    """
+    Form for employers to create and edit job postings.
+    """
+    class Meta:
+        model = Job
+        fields = ['title', 'description', 'requirements', 'location', 'job_type', 'salary_min', 'salary_max']
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'e.g., Senior Python Developer'
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'Describe the role, responsibilities, and what makes this opportunity great...',
+                'rows': 6
+            }),
+            'requirements': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'List required skills, qualifications, and experience...',
+                'rows': 6
+            }),
+            'location': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'e.g., San Francisco, CA or Remote'
+            }),
+            'job_type': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+            'salary_min': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Minimum salary (optional)',
+                'min': 0
+            }),
+            'salary_max': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Maximum salary (optional)',
+                'min': 0
+            }),
+        }
+        labels = {
+            'title': 'Job Title',
+            'description': 'Job Description',
+            'requirements': 'Requirements & Qualifications',
+            'location': 'Location',
+            'job_type': 'Job Type',
+            'salary_min': 'Minimum Salary (Optional)',
+            'salary_max': 'Maximum Salary (Optional)',
+        }
+    
+    def __init__(self, *args, **kwargs):
+        self.employer = kwargs.pop('employer', None)
+        super().__init__(*args, **kwargs)
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        salary_min = cleaned_data.get('salary_min')
+        salary_max = cleaned_data.get('salary_max')
+        
+        # Validate salary range
+        if salary_min and salary_max:
+            if salary_min > salary_max:
+                raise forms.ValidationError('Minimum salary cannot be greater than maximum salary.')
+        
+        return cleaned_data
+    
+    def save(self, commit=True):
+        job = super().save(commit=False)
+        job.employer = self.employer
+        job.is_active = True
+        
+        if commit:
+            job.save()
+        
+        return job

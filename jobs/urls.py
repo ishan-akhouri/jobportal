@@ -10,4 +10,8 @@ urlpatterns = [
     path('<int:pk>/', views.job_detail_view, name='job_detail'),
     path('<int:pk>/apply/', views.apply_to_job, name='apply'),
     path('my-applications/', views.my_applications_view, name='my_applications'),
+    
+    # Job posting (for employers)
+    path('post/', views.post_job_view, name='post_job'),
+    path('my-jobs/', views.my_jobs_view, name='my_jobs'),
 ]

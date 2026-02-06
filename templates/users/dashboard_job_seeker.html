@@ -46,10 +46,13 @@
             <div class="card-body">
                 <h5 class="card-title mb-3">Quick Actions</h5>
                 <div class="d-grid gap-2 d-md-flex">
-                    <a href="#" class="btn btn-primary">
+                    <a href="{% url 'jobs:job_list' %}" class="btn btn-primary">
                         🔍 Browse Jobs
                     </a>
-                    <a href="{% url 'users:profile_edit' %}" class="btn btn-outline-primary">
+                    <a href="{% url 'jobs:my_applications' %}" class="btn btn-outline-primary">
+                        📄 My Applications
+                    </a>
+                    <a href="{% url 'users:profile_edit' %}" class="btn btn-outline-secondary">
                         ✏️ Edit Profile
                     </a>
                     {% if profile_completion < 100 %}
@@ -73,32 +76,32 @@
         </div>
         {% endif %}
 
-        <!-- Recent Jobs Section (Placeholder) -->
+        <!-- Recent Jobs Section -->
         <div class="card shadow">
             <div class="card-body">
                 <h5 class="card-title mb-3">Recent Job Postings</h5>
                 <div class="text-center text-muted py-5">
-                    <p class="lead">No jobs available yet</p>
-                    <p>Check back soon for new opportunities!</p>
-                    <small class="text-muted">(Job browsing feature coming in Phase 3)</small>
+                    <p class="lead">Ready to find your next opportunity?</p>
+                    <p>Browse available jobs and start applying!</p>
+                    <a href="{% url 'jobs:job_list' %}" class="btn btn-primary mt-2">Browse Jobs</a>
                 </div>
             </div>
         </div>
 
-        <!-- My Applications Section (Placeholder) -->
+        <!-- My Applications Section -->
         <div class="card shadow mt-4">
             <div class="card-body">
                 <h5 class="card-title mb-3">My Applications</h5>
                 {% if applications_count > 0 %}
                     <div class="text-center text-muted py-5">
                         <p class="lead">You have {{ applications_count }} application{{ applications_count|pluralize }}</p>
-                        <p>Application tracking coming soon!</p>
+                        <a href="{% url 'jobs:my_applications' %}" class="btn btn-primary mt-2">View My Applications</a>
                     </div>
                 {% else %}
                     <div class="text-center text-muted py-5">
                         <p class="lead">You haven't applied to any jobs yet</p>
                         <p>Start browsing jobs and submit your applications!</p>
-                        <a href="#" class="btn btn-primary mt-2">Browse Jobs</a>
+                        <a href="{% url 'jobs:job_list' %}" class="btn btn-primary mt-2">Browse Jobs</a>
                     </div>
                 {% endif %}
             </div>
