@@ -14,4 +14,6 @@ urlpatterns = [
     # Job posting (for employers)
     path('post/', views.post_job_view, name='post_job'),
     path('my-jobs/', views.my_jobs_view, name='my_jobs'),
+    path('<int:pk>/edit/', views.edit_job_view, name='edit_job'),
+    path('<int:pk>/delete/', views.delete_job_view, name='delete_job'),
 ]

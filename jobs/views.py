@@ -188,3 +188,72 @@ def my_jobs_view(request):
     }
     
     return render(request, 'jobs/my_jobs.html', context)
+
+
+@login_required
+def edit_job_view(request, pk):
+    """
+    Edit an existing job posting.
+    Only accessible to the employer who created the job.
+    """
+    # Get the job
+    job = get_object_or_404(Job, pk=pk)
+    
+    # Check if user is an employer
+    if request.user.user_type != 'employer':
+        messages.error(request, 'Only employers can edit jobs.')
+        return redirect('jobs:job_detail', pk=pk)
+    
+    # Check if user owns this job
+    if job.employer != request.user:
+        messages.error(request, 'You can only edit your own job postings.')
+        return redirect('jobs:job_detail', pk=pk)
+    
+    if request.method == 'POST':
+        form = JobPostForm(request.POST, instance=job, employer=request.user)
+        if form.is_valid():
+            job = form.save()
+            messages.success(request, f'Job "{job.title}" has been updated successfully!')
+            return redirect('jobs:my_jobs')
+    else:
+        form = JobPostForm(instance=job, employer=request.user)
+    
+    context = {
+        'form': form,
+        'job': job,
+        'editing': True,
+    }
+    
+    return render(request, 'jobs/edit_job.html', context)
+
+
+@login_required
+def delete_job_view(request, pk):
+    """
+    Delete a job posting.
+    Only accessible to the employer who created the job.
+    """
+    # Get the job
+    job = get_object_or_404(Job, pk=pk)
+    
+    # Check if user is an employer
+    if request.user.user_type != 'employer':
+        messages.error(request, 'Only employers can delete jobs.')
+        return redirect('jobs:job_detail', pk=pk)
+    
+    # Check if user owns this job
+    if job.employer != request.user:
+        messages.error(request, 'You can only delete your own job postings.')
+        return redirect('jobs:job_detail', pk=pk)
+    
+    if request.method == 'POST':
+        job_title = job.title
+        job.delete()
+        messages.success(request, f'Job "{job_title}" has been deleted successfully!')
+        return redirect('jobs:my_jobs')
+    
+    context = {
+        'job': job,
+    }
+    
+    return render(request, 'jobs/delete_job.html', context)

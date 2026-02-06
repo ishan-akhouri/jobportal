@@ -1,0 +1,50 @@
+<!-- templates/jobs/delete_job.html -->
+{% extends 'base.html' %}
+
+{% block title %}Delete Job - Job Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-6 mx-auto">
+        <a href="{% url 'jobs:my_jobs' %}" class="btn btn-sm btn-outline-secondary mb-3">
+            &larr; Back to My Jobs
+        </a>
+
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">⚠️ Confirm Deletion</h4>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Are you sure you want to delete this job?</h5>
+                
+                <div class="alert alert-warning">
+                    <strong>Job Title:</strong> {{ job.title }}<br>
+                    <strong>Location:</strong> {{ job.location }}<br>
+                    <strong>Type:</strong> {{ job.get_job_type_display }}
+                </div>
+
+                <div class="alert alert-danger">
+                    <strong>Warning:</strong> This action cannot be undone!
+                    <ul class="mb-0 mt-2">
+                        <li>The job posting will be permanently deleted</li>
+                        <li>All applications to this job will also be deleted</li>
+                        <li>Applicants will not be notified</li>
+                    </ul>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger btn-lg">
+                            Yes, Delete This Job
+                        </button>
+                        <a href="{% url 'jobs:my_jobs' %}" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

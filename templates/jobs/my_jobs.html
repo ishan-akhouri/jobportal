@@ -60,7 +60,7 @@
                                             <a href="{% url 'jobs:job_detail' job.pk %}" class="btn btn-sm btn-outline-primary">
                                                 View Job
                                             </a>
-                                            <a href="#" class="btn btn-sm btn-outline-secondary">
+                                            <a href="{% url 'jobs:edit_job' job.pk %}" class="btn btn-sm btn-outline-secondary">
                                                 Edit Job
                                             </a>
                                             {% if job.application_count > 0 %}
@@ -68,6 +68,9 @@
                                                     View Applications ({{ job.application_count }})
                                                 </a>
                                             {% endif %}
+                                            <a href="{% url 'jobs:delete_job' job.pk %}" class="btn btn-sm btn-outline-danger">
+                                                Delete Job
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
