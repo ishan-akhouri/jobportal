@@ -1,0 +1,126 @@
+<!-- templates/jobs/job_detail.html -->
+{% extends 'base.html' %}
+
+{% block title %}{{ job.title }} - Job Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Job Header -->
+        <div class="mb-4">
+            <a href="{% url 'jobs:job_list' %}" class="btn btn-sm btn-outline-secondary mb-3">
+                &larr; Back to Jobs
+            </a>
+            <h1 class="mb-2">{{ job.title }}</h1>
+            <p class="lead text-muted mb-3">
+                <strong>{{ job.employer.employerprofile.company_name }}</strong>
+            </p>
+            <div class="mb-3">
+                <span class="badge bg-info text-dark me-2">{{ job.get_job_type_display }}</span>
+                <span class="badge bg-secondary me-2">{{ job.location }}</span>
+                <span class="badge bg-light text-dark">Posted {{ job.created_at|timesince }} ago</span>
+            </div>
+        </div>
+
+        <!-- Job Description -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Job Description</h5>
+                <p class="card-text" style="white-space: pre-line;">{{ job.description }}</p>
+            </div>
+        </div>
+
+        <!-- Requirements -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Requirements</h5>
+                <p class="card-text" style="white-space: pre-line;">{{ job.requirements }}</p>
+            </div>
+        </div>
+
+        <!-- Company Info -->
+        {% if job.employer.employerprofile.company_description %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">About {{ job.employer.employerprofile.company_name }}</h5>
+                    <p class="card-text">{{ job.employer.employerprofile.company_description }}</p>
+                    {% if job.employer.employerprofile.website %}
+                        <a href="{{ job.employer.employerprofile.website }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                            Visit Website
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <div class="card sticky-top" style="top: 20px;">
+            <div class="card-body">
+                <h5 class="card-title">Job Details</h5>
+                
+                {% if job.salary_min and job.salary_max %}
+                    <div class="mb-3">
+                        <strong>Salary Range:</strong>
+                        <p class="text-success mb-0">
+                            ${{ job.salary_min|floatformat:0 }} - ${{ job.salary_max|floatformat:0 }}
+                        </p>
+                    </div>
+                {% endif %}
+
+                <div class="mb-3">
+                    <strong>Job Type:</strong>
+                    <p class="mb-0">{{ job.get_job_type_display }}</p>
+                </div>
+
+                <div class="mb-3">
+                    <strong>Location:</strong>
+                    <p class="mb-0">{{ job.location }}</p>
+                </div>
+
+                <div class="mb-4">
+                    <strong>Posted:</strong>
+                    <p class="mb-0">{{ job.created_at|date:"F d, Y" }}</p>
+                </div>
+
+                <hr>
+
+                <!-- Apply Button -->
+                {% if user.is_authenticated %}
+                    {% if user.user_type == 'job_seeker' %}
+                        {% if has_applied %}
+                            <div class="alert alert-success">
+                                <strong>✓ Applied</strong>
+                                <p class="mb-0 small">You have already applied to this job.</p>
+                            </div>
+                            <a href="{% url 'jobs:job_list' %}" class="btn btn-outline-primary w-100">
+                                Browse More Jobs
+                            </a>
+                        {% else %}
+                            <a href="#" class="btn btn-primary w-100 btn-lg">
+                                Apply Now
+                            </a>
+                            <p class="text-muted small mt-2 text-center">
+                                You'll be able to add a cover letter
+                            </p>
+                        {% endif %}
+                    {% else %}
+                        <div class="alert alert-info">
+                            <p class="mb-0 small">You are logged in as an employer. Only job seekers can apply.</p>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'users:login' %}?next={{ request.path }}" class="btn btn-primary w-100 btn-lg">
+                        Login to Apply
+                    </a>
+                    <p class="text-muted small mt-2 text-center">
+                        Don't have an account? 
+                        <a href="{% url 'users:register_job_seeker' %}">Register</a>
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

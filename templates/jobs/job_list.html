@@ -1,0 +1,94 @@
+<!-- templates/jobs/job_list.html -->
+{% extends 'base.html' %}
+
+{% block title %}Browse Jobs - Job Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Browse Jobs</h1>
+        
+        <!-- Search and Filter Form -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="get" action="{% url 'jobs:job_list' %}">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            {{ form.search }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form.location }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form.job_type }}
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">
+                                Search
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Results Count -->
+        <div class="mb-3">
+            <p class="text-muted">
+                Found <strong>{{ total_jobs }}</strong> job{{ total_jobs|pluralize }}
+            </p>
+        </div>
+
+        <!-- Job Listings -->
+        {% if jobs %}
+            <div class="row">
+                {% for job in jobs %}
+                    <div class="col-12 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        <h5 class="card-title">
+                                            <a href="{% url 'jobs:job_detail' job.pk %}" class="text-decoration-none">
+                                                {{ job.title }}
+                                            </a>
+                                        </h5>
+                                        <p class="card-text text-muted mb-2">
+                                            <strong>{{ job.employer.employerprofile.company_name }}</strong>
+                                        </p>
+                                        <p class="card-text">
+                                            <span class="badge bg-info text-dark me-2">{{ job.get_job_type_display }}</span>
+                                            <span class="badge bg-secondary">{{ job.location }}</span>
+                                        </p>
+                                        <p class="card-text text-truncate" style="max-width: 600px;">
+                                            {{ job.description|truncatewords:30 }}
+                                        </p>
+                                    </div>
+                                    <div class="col-md-3 text-end">
+                                        <p class="text-muted small mb-2">
+                                            Posted {{ job.created_at|timesince }} ago
+                                        </p>
+                                        {% if job.salary_min and job.salary_max %}
+                                            <p class="text-success fw-bold mb-3">
+                                                ${{ job.salary_min|floatformat:0 }} - ${{ job.salary_max|floatformat:0 }}
+                                            </p>
+                                        {% endif %}
+                                        <a href="{% url 'jobs:job_detail' job.pk %}" class="btn btn-outline-primary">
+                                            View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <h4>No jobs found</h4>
+                <p class="mb-0">Try adjusting your search filters or check back later for new opportunities.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
