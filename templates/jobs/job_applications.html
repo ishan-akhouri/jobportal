@@ -1,0 +1,159 @@
+<!-- templates/jobs/job_applications.html -->
+{% extends 'base.html' %}
+
+{% block title %}Applications for {{ job.title }} - Job Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <a href="{% url 'jobs:my_jobs' %}" class="btn btn-sm btn-outline-secondary mb-3">
+            &larr; Back to My Jobs
+        </a>
+
+        <!-- Job Header -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h3 class="card-title">{{ job.title }}</h3>
+                        <p class="card-text">
+                            <span class="badge bg-info text-dark me-2">{{ job.get_job_type_display }}</span>
+                            <span class="badge bg-secondary">{{ job.location }}</span>
+                        </p>
+                        <p class="text-muted mb-0">Posted {{ job.created_at|date:"F d, Y" }}</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="mb-2">
+                            <span class="badge bg-primary fs-5">
+                                {{ applications.count }} Application{{ applications.count|pluralize }}
+                            </span>
+                        </div>
+                        <a href="{% url 'jobs:job_detail' job.pk %}" class="btn btn-sm btn-outline-primary">
+                            View Job Posting
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Applications List -->
+        <h4 class="mb-3">Applications</h4>
+
+        {% if applications %}
+            {% for application in applications %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Applicant Info -->
+                            <div class="col-md-8">
+                                <h5 class="card-title">
+                                    {{ application.applicant.first_name }} {{ application.applicant.last_name }}
+                                </h5>
+                                
+                                <!-- Contact Info -->
+                                <p class="card-text mb-2">
+                                    <strong>Email:</strong> 
+                                    <a href="mailto:{{ application.applicant.email }}">{{ application.applicant.email }}</a>
+                                    <br>
+                                    {% if application.applicant.phone %}
+                                        <strong>Phone:</strong> {{ application.applicant.phone }}
+                                        <br>
+                                    {% endif %}
+                                </p>
+
+                                <!-- Profile Info -->
+                                <div class="mb-3">
+                                    {% if application.applicant.jobseekerprofile.experience_years %}
+                                        <span class="badge bg-light text-dark me-2">
+                                            {{ application.applicant.jobseekerprofile.experience_years }} years experience
+                                        </span>
+                                    {% endif %}
+                                    {% if application.applicant.jobseekerprofile.education %}
+                                        <span class="badge bg-light text-dark">
+                                            {{ application.applicant.jobseekerprofile.education }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Skills -->
+                                {% if application.applicant.jobseekerprofile.skills %}
+                                    <div class="mb-3">
+                                        <strong class="text-muted small">Skills:</strong>
+                                        <p class="card-text small mb-0">{{ application.applicant.jobseekerprofile.skills|truncatewords:20 }}</p>
+                                    </div>
+                                {% endif %}
+
+                                <!-- Cover Letter -->
+                                {% if application.cover_letter %}
+                                    <hr>
+                                    <div>
+                                        <strong class="text-muted small">Cover Letter:</strong>
+                                        <p class="card-text" style="white-space: pre-line;">{{ application.cover_letter }}</p>
+                                    </div>
+                                {% else %}
+                                    <hr>
+                                    <p class="text-muted small mb-0"><em>No cover letter provided</em></p>
+                                {% endif %}
+                            </div>
+
+                            <!-- Application Details & Actions -->
+                            <div class="col-md-4 text-end">
+                                <!-- Application Status -->
+                                <div class="mb-3">
+                                    {% if application.status == 'pending' %}
+                                        <span class="badge bg-warning text-dark">Pending Review</span>
+                                    {% elif application.status == 'reviewed' %}
+                                        <span class="badge bg-info">Reviewed</span>
+                                    {% elif application.status == 'interview' %}
+                                        <span class="badge bg-primary">Interview</span>
+                                    {% elif application.status == 'accepted' %}
+                                        <span class="badge bg-success">Accepted</span>
+                                    {% elif application.status == 'rejected' %}
+                                        <span class="badge bg-danger">Rejected</span>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Applied Date -->
+                                <p class="text-muted small mb-3">
+                                    Applied {{ application.applied_at|timesince }} ago
+                                    <br>
+                                    {{ application.applied_at|date:"F d, Y" }}
+                                </p>
+
+                                <!-- Resume Download -->
+                                {% if application.applicant.jobseekerprofile.resume %}
+                                    <div class="mb-3">
+                                        <a href="{{ application.applicant.jobseekerprofile.resume.url }}" 
+                                           class="btn btn-sm btn-outline-primary w-100" 
+                                           target="_blank" 
+                                           download>
+                                            📄 Download Resume
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <div class="mb-3">
+                                        <button class="btn btn-sm btn-outline-secondary w-100" disabled>
+                                            No Resume
+                                        </button>
+                                    </div>
+                                {% endif %}
+
+                                <!-- Contact Button -->
+                                <a href="mailto:{{ application.applicant.email }}" class="btn btn-sm btn-success w-100">
+                                    ✉️ Contact Applicant
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <!-- No Applications -->
+            <div class="alert alert-info">
+                <h4>No Applications Yet</h4>
+                <p class="mb-0">This job hasn't received any applications yet. Check back later!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

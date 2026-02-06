@@ -64,7 +64,7 @@
                                                 Edit Job
                                             </a>
                                             {% if job.application_count > 0 %}
-                                                <a href="#" class="btn btn-sm btn-outline-info">
+                                                <a href="{% url 'jobs:job_applications' job.pk %}" class="btn btn-sm btn-outline-info">
                                                     View Applications ({{ job.application_count }})
                                                 </a>
                                             {% endif %}

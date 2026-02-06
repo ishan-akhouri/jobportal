@@ -257,3 +257,35 @@ def delete_job_view(request, pk):
     }
     
     return render(request, 'jobs/delete_job.html', context)
+
+
+@login_required
+def job_applications_view(request, pk):
+    """
+    View all applications for a specific job.
+    Only accessible to the employer who posted the job.
+    """
+    # Get the job
+    job = get_object_or_404(Job, pk=pk)
+    
+    # Check if user is an employer
+    if request.user.user_type != 'employer':
+        messages.error(request, 'Only employers can view applications.')
+        return redirect('jobs:job_detail', pk=pk)
+    
+    # Check if user owns this job
+    if job.employer != request.user:
+        messages.error(request, 'You can only view applications for your own job postings.')
+        return redirect('jobs:job_detail', pk=pk)
+    
+    # Get all applications for this job
+    applications = Application.objects.filter(job=job).select_related(
+        'applicant', 'applicant__jobseekerprofile'
+    ).order_by('-applied_at')
+    
+    context = {
+        'job': job,
+        'applications': applications,
+    }
+    
+    return render(request, 'jobs/job_applications.html', context)
